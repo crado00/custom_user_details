@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom UserDetailsService Demo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+        }
+        .auth-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            margin: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        .btn-primary {
+            background: rgba(76, 175, 80, 0.8);
+            border-color: rgba(76, 175, 80, 1);
+        }
+        .btn-secondary {
+            background: rgba(33, 150, 243, 0.8);
+            border-color: rgba(33, 150, 243, 1);
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .info-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🔐 커스텀 UserDetailsService 데모</h1>
+        <p>데이터베이스 기반 사용자 인증 시스템</p>
+    </div>
+
+    <!-- 인증 상태에 따른 표시 -->
+    <div class="auth-section" sec:authorize="isAuthenticated()">
+        <h2>안녕하세요, <span sec:authentication="name">사용자</span>님! 👋</h2>
+        <p><strong>권한:</strong> <span sec:authentication="authorities">권한</span></p>
+        <div>
+            <a href="/dashboard" class="btn btn-primary">대시보드</a>
+            <a href="/profile" class="btn btn-secondary">프로필</a>
+            <a sec:authorize="hasRole('ADMIN')" href="/admin" class="btn">관리자</a>
+            <a sec:authorize="hasRole('MANAGER')" href="/manager" class="btn">매니저</a>
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <button type="submit" class="btn" style="background: rgba(244, 67, 54, 0.8);">로그아웃</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="auth-section" sec:authorize="!isAuthenticated()">
+        <h2>환영합니다! 🎉</h2>
+        <p>로그인하거나 새 계정을 만들어보세요.</p>
+        <div>
+            <a href="/login" class="btn btn-primary">로그인</a>
+            <a href="/register" class="btn btn-secondary">회원가입</a>
+        </div>
+    </div>
+
+    <!-- 데모 정보 -->
+    <div class="info-grid">
+        <div class="info-card">
+            <h3>🗄️ 데이터베이스 연동</h3>
+            <p>메모리가 아닌 실제 데이터베이스에서 사용자 정보를 관리합니다.</p>
+            <ul style="text-align: left;">
+                <li>JPA Entity와 Repository 활용</li>
+                <li>영구적인 사용자 정보 저장</li>
+                <li>동적 사용자 등록 가능</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <h3>🔒 커스텀 UserDetails</h3>
+            <p>Spring Security의 UserDetails를 커스터마이징하여 확장된 사용자 정보를 제공합니다.</p>
+            <ul style="text-align: left;">
+                <li>계정 상태 관리 (활성화, 잠금 등)</li>
+                <li>다양한 권한 시스템</li>
+                <li>추가 사용자 정보 포함</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <h3>👤 사용자 관리</h3>
+            <p>실제 운영 환경에서 필요한 사용자 관리 기능을 제공합니다.</p>
+            <ul style="text-align: left;">
+                <li>회원가입 및 로그인</li>
+                <li>권한별 페이지 접근 제어</li>
+                <li>관리자 도구</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- H2 콘솔 링크 (개발용) -->
+    <div class="auth-section">
+        <h3>🛠️ 개발 도구</h3>
+        <a href="/h2-console" class="btn" target="_blank">H2 Database Console</a>
+        <p><small>JDBC URL: jdbc:h2:mem:securitydb</small></p>
+    </div>
+</div>
+</body>
+</html>
